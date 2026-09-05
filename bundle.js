@@ -10244,8 +10244,42 @@ var exportGpx = function (copyToClipboard) {
     xml.att('xmlns', "http://www.topografix.com/GPX/1/1"),
     xml.att('xmlns:xsi', "http://www.w3.org/2001/XMLSchema-instance"),
     xml.att('xsi:schemaLocation', "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"),
-    xml.att('version', "1.0"),
+    xml.att('version', "1.1"),
     xml.att('creator', "RouteMarins");
+    let metadata = xml.ele('metadata');
+    let link = metadata.ele('link', { href: 'http://vrzen.org' });
+    link.ele('text', 'RouteMarins');
+    metadata.ele('time', '2026-09-05T15:22:31Z');
+    // 2. --- AJOUT DES WAYPOINTS (<wpt>) POUR CHAQUE POINT ---
+    for (let point of points) {
+        if (point.latitude !== undefined && point.longitude !== undefined) {
+            // Création du waypoint racine avec ses attributs lat et lon
+            let waypoint = xml.ele('wpt', {
+                lat: point.latitude,
+                lon: point.longitude
+            });
+
+            // Formatage de la date en ISO (Z)
+            let isoDate = "";
+            if ((point.timezone === "CET") || (point.timezone === "CEST")) {
+                isoDate = moment.tz(point.date + " " + point.time, "Europe/Paris").toISOString();
+            } else if (point.timezone === "UTC") {
+                isoDate = moment.utc(point.date + " " + point.time).toISOString();
+            }
+
+            // On peut optionnellement forcer le format court sans les secondes "YYYY-MM-DDTHH:mmZ" si besoin :
+            // isoDate = moment(isoDate).format("YYYY-MM-DDTHH:mm[Z]");
+
+            waypoint.ele('time', isoDate);
+            waypoint.ele('name', isoDate); // Le nom reprend la même date dans votre exemple
+
+            // Construction de la chaîne de description dynamique
+            // Adaptez les propriétés (point.hdog, point.twa, etc.) selon la structure exacte de vos objets
+            let description = `HDG:${point.hdg} TWA:${point.twa} ${point.sail} SOG:${point.sog} kt TWS:${point.tws} kt`;
+            waypoint.ele('desc', description);
+        }
+    }
+/*
     let route = xml.ele('rte');
     route.ele('name', "RouteMarins " + points[0].race);
     for (point of points) {
@@ -10262,6 +10296,7 @@ var exportGpx = function (copyToClipboard) {
             routePoint.ele('name', point.ttw);
         }
     }
+*/
     let xmlString = xml.end({
         pretty: true
     });

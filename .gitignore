@@ -7,6 +7,8 @@
 
 *_ITYC.js
 
+/node_modules
+
 /dot.svg
 
 /popup.html
@@ -21,13 +23,13 @@
 
 /lib/geodesicLine
 
-/lib/jszip	
+/lib/jszip
 
 /lib/Windy
 
 /lib/leaflet@1.4.0
 
-/lib/gpxParser	
+/lib/gpxParser
 
 /lib/polylineDecorator
 
