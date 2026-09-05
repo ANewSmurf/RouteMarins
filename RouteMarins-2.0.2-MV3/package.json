@@ -1,0 +1,25 @@
+{
+  "name": "RouteMarins",
+  "description": "Extract route from VR Dashboard MultiRaces - custom",
+  "dependencies": {
+    "browserify": "^16.0.0",
+    "global": "^4.3.2",
+    "moment-timezone": "^0.5.21",
+    "xmlbuilder": "^9.0.7"
+  },
+  "watch": {
+    "bundle": {
+      "ignore": [
+        "bundle.js",
+        "node_modules"
+      ],
+      "patterns": ["*.js","*.css","*.html","*.png"],
+      "extensions": "js,html,css,json",
+      "quiet": true
+    }
+  },
+  "scripts": {
+    "bundle": "browserify popup.js -o bundle.js",
+    "watch": "npm-watch bundle"
+  }
+}

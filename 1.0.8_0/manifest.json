@@ -1,0 +1,25 @@
+{
+   "background": {
+      "scripts": [ "eventPage.js" ]
+   },
+   "content_scripts": [ {
+      "js": [ "myscript.js" ],
+      "matches": [ "http://*.zezo.org/*/chart.pl*", "https://www.virtualregatta.com//*" ]
+   } ],
+   "description": "Extract data from Zezo and display them in table ; Direct Windy and Toxcct access ; wind rotation calc ; kml & prog export",
+   "icons": {
+      "128": "iconfinder128.png",
+      "16": "iconfinder16.png",
+      "48": "iconfinder48.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvVdvEkbCflIzSihmtYQz2bT+PR0uz4Jm5nrBxDg2wx3/Pvoz3Oe07XJauwsnUKqWeZZfEofGUD5L2uqrL7Y6tPpNZCzURBeN4hBzdtUYHwSvJFqnpkGatGDMFQ41CVm8/DSiMQf7bSpac4DZIjPCMgeIUTfnPV12vY9nEPZym+FSBreR7QgoTddVFTHhXC/AW8SEXvoCEcdrEZ2tA2MoWWj9buwFGxRMXkTtL43kWL1fSIck55jnM97QIdUUf4piGUVTIRnVGoabw3RfX7Rb1ZAOcUdZCGTOxzxnGkjOcvgZJQwJGfQCxNKdFqg2fVx6wizKzUhkxfbp/P1lqbbujwIDAQAB",
+   "manifest_version": 2,
+   "name": "RouteMarins",
+   "page_action": {
+      "default_icon": "iconfinder.png",
+      "default_popup": "popup.html"
+   },
+   "permissions": [ "tabs", "storage" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "1.0.8"
+}

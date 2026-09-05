@@ -1,0 +1,45 @@
+atwa: 145
+cog: " 103°"
+cos_twa_x: -155.88457268119896
+cum_twa_x: -293.772572442615
+cum_twa_y: 205.70176974357707
+cur_ttw: 4170
+cur_twa: 150
+cur_cog: 103
+date: "2021-03-22"
+delta_ttw: 180
+delta_twd: 11
+dtg: "833.8nm"
+dtw: "1771.5nm"
+index: 24
+latitude: -56.875
+longitude: -92.5
+race: "Jules Verne Trophy"
+restart_atwa: false
+rotation: "3.7"
+sail: " HG"
+sin_twa_y: 89.99999999999999
+sog: " 33.13 kts"
+time: "15:00"
+timezone: "UTC"
+ttw: "T+69:30"
+twa: " 150°"
+twd: "252°"
+tws: "27.8 kt"
+
+<img src="img/dot.png" class="abs" alt="" style="z-index: 1; left :-7023px; top:22419px;" 
+	onmouseover="updi(event,'2021-02-23 18:50 UTC (T+ 2:10)<br>Distances:&nbsp;33.9nm/3164.4nm<br><b>Wind:</b> 232&deg; 20.9 kt (<b>TWA 45&deg;</b>)<br><b>Heading:</b> 187&deg;<b>Sail:</b> Stay<br><b>Boat Speed:</b> 15.84 kts','220px')" onmouseout="cleari()" 
+	onmousedown="show_wind(3);">
+
+updi(event,
+'2021-02-18 22:00 CET (T+27:20)<br>
+Distances: 367.7nm/204.8nm<br>
+<b>Wind:</b> 198° 30.2 kt (<b>TWA -85°</b>)<br>
+<b>Heading:</b> 283°<b>Sail:</b> Stay<br>
+<b>Boat Speed:</b> 19.86 kts','220px')
+
+https://www.windy.com/?gfs,2021-03-26-21,-38.563,-35.992,5,i:pressure,d:picker
+
+http://toxcct.free.fr/polars/?race_id=440.1&tws=7.5&twa=105&utm_source=VRDashboard
+
+http://zezo.org/jv/chart.pl?lat=-53.60810599294782&lon=-131.2824645418697&ts=1616237400&o=244&twa=150&userid=5fa7d9cfa73ee0501834f0fe&type=me&auto=no
