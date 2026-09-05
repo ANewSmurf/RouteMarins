@@ -476,7 +476,7 @@ var exportGpx = function (copyToClipboard) {
     let metadata = xml.ele('metadata');
     let link = metadata.ele('link', { href: 'https://chromewebstore.google.com/detail/routemarins/imipnigmdedacnmjnkoepkigpicdjmje' });
     link.ele('text', 'RouteMarins');
-    metadata.ele('time', '2026-09-05T15:22:31Z');
+    metadata.ele('time', new Date().toISOString());
     // 2. --- AJOUT DES WAYPOINTS (<wpt>) POUR CHAQUE POINT ---
     for (let point of points) {
         if (point.latitude !== undefined && point.longitude !== undefined) {
