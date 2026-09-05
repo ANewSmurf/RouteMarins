@@ -474,7 +474,7 @@ var exportGpx = function (copyToClipboard) {
     xml.att('version', "1.1"),
     xml.att('creator', "RouteMarins");
     let metadata = xml.ele('metadata');
-    let link = metadata.ele('link', { href: 'http://vrzen.org' });
+    let link = metadata.ele('link', { href: 'https://chromewebstore.google.com/detail/routemarins/imipnigmdedacnmjnkoepkigpicdjmje' });
     link.ele('text', 'RouteMarins');
     metadata.ele('time', '2026-09-05T15:22:31Z');
     // 2. --- AJOUT DES WAYPOINTS (<wpt>) POUR CHAQUE POINT ---
@@ -502,7 +502,7 @@ var exportGpx = function (copyToClipboard) {
 
             // Construction de la chaîne de description dynamique
             // Adaptez les propriétés (point.hdog, point.twa, etc.) selon la structure exacte de vos objets
-            let description = `HDG:${point.hdg} TWA:${point.twa} ${point.sail} SOG:${point.sog} kt TWS:${point.tws} kt`;
+            let description = `HDG:${point.cog} TWA:${point.twa} ${point.sail} SOG:${point.sog} TWS:${point.tws}`;
             waypoint.ele('desc', description);
         }
     }
