@@ -9903,7 +9903,7 @@ function createCell(value, row, isHtml = false) {
     if (isHtml) {
         cell.innerHTML = value;
     } else {
-        cell.textContent = content; // Sécurise le texte brut (ex: la date)
+        cell.textContent = value; // Sécurise le texte brut (ex: la date)
     }
     row.appendChild(cell);
 }
