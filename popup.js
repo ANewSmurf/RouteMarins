@@ -357,6 +357,7 @@ function refreshFixedTable() {
 }
 
 function displayTable(localTime) {
+    const userTimezone = moment.tz.guess();
     points.forEach(function (element) {
         var row = document.createElement('tr');
         document.getElementById("pointsTable").appendChild(row);
@@ -366,9 +367,18 @@ function displayTable(localTime) {
             createCell(localTZ[1] + '<font style="font-size: xx-small; vertical-align: middle;">' + localTZ[2] + '</font>', row, true);
             // createCell(localTZ[2], row);
         } else {
-            createCell(element.date, row);
-            createCell(element.time + '<font style="font-size: xx-small; vertical-align: middle;">' + element.timezone + '</font>', row, true);
-            // createCell(element.timezone, row);
+            // --- MODE UTC ACTIVÉ (CONVERSION DEPUIS LA LOCALTIME) ---
+            // On part du principe que element.date et element.time sont actuellement stockés en heure locale
+            let localMoment = moment.tz(element.date + " " + element.time, userTimezone);
+            // Basculer l'objet en UTC
+            let utcMoment = localMoment.utc();
+            // Formater les chaînes pour l'affichage
+            let utcDate = utcMoment.format("ddd DD"); // Ajustez le format de la date si nécessaire (ex: "DD/MM")
+            let utcTime = utcMoment.format("HH:mm");
+            createCell(utcDate, row, false); // Date convertie en UTC
+            // Heure convertie en UTC + mention "UTC" en petit
+            var heureUtcHtml = utcTime + ' <font style="font-size: xx-small; vertical-align: middle;">UTC</font>';
+            createCell(heureUtcHtml, row, true);
         }
         var position = dmsConv(element.latitude, element.longitude);
         createCellWindy(position, element, row);
