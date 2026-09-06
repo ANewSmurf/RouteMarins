@@ -10186,12 +10186,12 @@ function displayTable(localTime) {
         if (localTime) {
             var localTZ = TzToLocal(element.date, element.time, element.timezone);
             createCell(localTZ[0], row);
-            createCell(localTZ[1], row);
-            createCell(localTZ[2], row);
+            createCell(localTZ[1] + " " + localTZ[2], row);
+            // createCell(localTZ[2], row);
         } else {
             createCell(element.date, row);
-            createCell(element.time, row);
-      //      createCell(element.timezone, row);
+            createCell(element.time + " " + element.timezone, row);
+            // createCell(element.timezone, row);
         }
         var position = dmsConv(element.latitude, element.longitude);
         createCellWindy(position, element, row);
