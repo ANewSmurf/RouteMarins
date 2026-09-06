@@ -364,8 +364,7 @@ function displayTable(localTime) {
         if (localTime) {
             var localTZ = TzToLocal(element.date, element.time, element.timezone);
             createCell(localTZ[0], row);
-            createCell(localTZ[1] + '<font style="font-size: xx-small; vertical-align: middle;">' + localTZ[2] + '</font>', row, true);
-            // createCell(localTZ[2], row);
+            createCell(localTZ[1] + ' <font style="font-size: xx-small; vertical-align: middle;">' + localTZ[2] + '</font>', row, true);
         } else {
             // --- MODE UTC ACTIVÉ (CONVERSION DEPUIS LA LOCALTIME) ---
             // On part du principe que element.date et element.time sont actuellement stockés en heure locale
