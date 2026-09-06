@@ -9,32 +9,4 @@
 
 /node_modules
 
-/dot.svg
-
-/lib/awesomeMarkers
-
-/lib/awesomeMarkers
-
-/lib/GribCache.js
-
-/lib/rotatedMarkers
-
-/lib/geodesicLine
-
-/lib/jszip
-
-/lib/Windy
-
-/lib/leaflet@1.4.0
-
-/lib/gpxParser
-
-/lib/polylineDecorator
-
-/style/gmap.css
-
-/style/contentIframe.css
-
-/style/leaflet.awesome-markers.css
-
 /img/*.old.*
