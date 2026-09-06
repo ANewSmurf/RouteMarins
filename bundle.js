@@ -9897,9 +9897,14 @@ function getRaceid(value) {
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function createCell(value, row) {
+function createCell(value, row, isHtml = false) {
     var cell = document.createElement('td');
-    cell.innerHTML = value;
+    cell.style.verticalAlign = "middle"; // Aligne le TD au milieu verticalement
+    if (isHtml) {
+        cell.innerHTML = value;
+    } else {
+        cell.textContent = content; // Sécurise le texte brut (ex: la date)
+    }
     row.appendChild(cell);
 }
 
@@ -10186,11 +10191,11 @@ function displayTable(localTime) {
         if (localTime) {
             var localTZ = TzToLocal(element.date, element.time, element.timezone);
             createCell(localTZ[0], row);
-            createCell(localTZ[1] + " " + localTZ[2], row);
+            createCell(localTZ[1] + '<font style="font-size: xx-small; vertical-align: middle;">' + localTZ[2] + '</font>', row, true);
             // createCell(localTZ[2], row);
         } else {
             createCell(element.date, row);
-            createCell(element.time + " " + element.timezone, row);
+            createCell(element.time + '<font style="font-size: xx-small; vertical-align: middle;">' + element.timezone + '</font>', row, true);
             // createCell(element.timezone, row);
         }
         var position = dmsConv(element.latitude, element.longitude);
