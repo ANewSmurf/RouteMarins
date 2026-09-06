@@ -10138,23 +10138,34 @@ function reinitializeDisplay() {
 }
 
 function TzToLocal(date, time, timezone) {
+    // 1. Détecter automatiquement la timezone de l'utilisateur
     var tzGuess = moment.tz.guess();
-    if (timezone === "CET" || timezone === "CEST") {
-        var CetOrCestToUtc = moment.tz(date + " " + time, "Europe/Paris").utc(),
-            localDateTz = moment.utc(CetOrCestToUtc).tz(tzGuess);
-    } else if (timezone === "UTC") {
-        var localDateTz = moment.utc(date + " " + time).tz(tzGuess);
+    var localDateTz;
+
+    // 2. Traiter la date de manière dynamique
+    if (timezone === "UTC") {
+        // Si c'est de l'UTC, on parse en UTC puis on bascule sur la timezone locale
+        localDateTz = moment.utc(date + " " + time).tz(tzGuess);
+    } else {
+        // Pour tout autre cas (CET, CEST ou autre timezone locale fournie par Zezo),
+        // on considère que l'heure fournie est déjà dans la timezone locale de l'utilisateur.
+        localDateTz = moment.tz(date + " " + time, tzGuess);
     }
+
+    // 3. Calcul de l'offset et formatage (Votre logique d'origine optimisée)
     var offset = localDateTz.utcOffset(),
         absOffset = Math.abs(offset),
         sign = (offset > 0) ? "+" : "-",
         hOffset = Math.trunc(absOffset / 60),
-        HoursOffset = (hOffset === 0) ? "\u00b1" + "0" : sign + hOffset,
-        mOffset = absOffset % 60,
-        HoursMinutesOffset = (mOffset === 0) ? HoursOffset : sign + hOffset + ":" + mOffset,
-        formatDate = localDateTz.format("ddd DD"),
+        mOffset = absOffset % 60;
+
+    var HoursOffset = (hOffset === 0) ? "\u00b10" : sign + hOffset;
+    var HoursMinutesOffset = (mOffset === 0) ? HoursOffset : sign + hOffset + ":" + (mOffset < 10 ? "0" + mOffset : mOffset);
+
+    var formatDate = localDateTz.format("ddd DD"),
         formatTime = localDateTz.format("HH:mm"),
         formatTimeZone = "UTC" + HoursMinutesOffset;
+
     return [formatDate, formatTime, formatTimeZone];
 }
 
@@ -10176,7 +10187,7 @@ function displayTable(localTime) {
             var localTZ = TzToLocal(element.date, element.time, element.timezone);
             createCell(localTZ[0], row);
             createCell(localTZ[1], row);
-      //      createCell(localTZ[2], row);
+            createCell(localTZ[2], row);
         } else {
             createCell(element.date, row);
             createCell(element.time, row);
