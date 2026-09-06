@@ -10306,6 +10306,9 @@ function downloadGeneratedFile(content, extension, mimeType) {
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var exportGpx = function (copyToClipboard) {
+    // 1. Détecter automatiquement la timezone de l'utilisateur
+    const userTimezone = moment.tz.guess();
+
     let xml = builder.create("gpx");
     xml.att('xmlns', "http://www.topografix.com/GPX/1/1"),
     xml.att('xmlns:xsi', "http://www.w3.org/2001/XMLSchema-instance"),
@@ -10325,16 +10328,15 @@ var exportGpx = function (copyToClipboard) {
                 lon: point.longitude
             });
 
-            // Formatage de la date en ISO (Z)
-            let isoDate = "";
-            if ((point.timezone === "CET") || (point.timezone === "CEST")) {
-                isoDate = moment.tz(point.date + " " + point.time, "Europe/Paris").toISOString();
-            } else if (point.timezone === "UTC") {
-                isoDate = moment.utc(point.date + " " + point.time).toISOString();
+            // Traitement générique de la date
+            let pointMoment;
+            if (point.timezone === "UTC") {
+                pointMoment = moment.utc(point.date + " " + point.time);
+            } else {
+                // Si Zezo envoie du CET/CEST ou l'heure locale, on l'interprète avec la timezone de l'utilisateur
+                pointMoment = moment.tz(point.date + " " + point.time, userTimezone);
             }
-
-            // On peut optionnellement forcer le format court sans les secondes "YYYY-MM-DDTHH:mmZ" si besoin :
-            // isoDate = moment(isoDate).format("YYYY-MM-DDTHH:mm[Z]");
+            let isoDate = pointMoment.utc().toISOString();
 
             waypoint.ele('time', isoDate);
             waypoint.ele('name', isoDate); // Le nom reprend la même date dans votre exemple
@@ -10345,24 +10347,6 @@ var exportGpx = function (copyToClipboard) {
             waypoint.ele('desc', description);
         }
     }
-/*
-    let route = xml.ele('rte');
-    route.ele('name', "RouteMarins " + points[0].race);
-    for (point of points) {
-        if (point.latitude !== undefined && point.longitude !== undefined) {
-            let routePoint = route.ele('rtept', {
-                lat: point.latitude,
-                lon: point.longitude
-            });
-            if ((point.timezone === "CET") || (point.timezone === "CEST")) {
-                routePoint.ele('time', moment.tz(point.date + " " + point.time, "Europe/Paris").toISOString());
-            } else if (point.timezone === "UTC") {
-                routePoint.ele('time', moment.utc(point.date + " " + point.time).toISOString());
-            }
-            routePoint.ele('name', point.ttw);
-        }
-    }
-*/
     let xmlString = xml.end({
         pretty: true
     });
@@ -10385,106 +10369,119 @@ document.getElementById("gpxDownload").addEventListener("click", function () {
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var exportkml = function (copyToClipboard) {
-  let kml = builder.create("kml", {
-    version: '1.0',
-    encoding: 'UTF-8'
-  });
-  kml.att('xmlns', "http://www.opengis.net/kml/2.2"),
-  kml.att('xmlns:vlm', "http://www.v-l-m.org"),
-  kml.att('xmlns:gx', "http://www.google.com/kml/ext/2.2"),
-  kml.att('creator', "RouteMarins");
-  let doc = kml.ele('Document');
-  var kmlStyle= {
-    Style: [{
-        '@id': "route_n",
-        IconStyle: {
-          scale: "0.5",
-          color: "ff1427a5",
-          Icon: { href: "https://www.webinage.fr/Placemark-32.png" },
-          hotSpot: {"@x": "16", "@y": "1", "@xunits": "pixels", "@yunits": "pixels"}
-          }
-      },{
-        '@id': "route_h",
-        IconStyle: {
-          scale: "0.5",
-          color: "ff1427a5",
-          Icon: { href: "https://www.webinage.fr/Placemark-32.png" },
-          hotSpot: {"@x": "16", "@y": "1", "@xunits": "pixels", "@yunits": "pixels"}
-          }
-      },{
-        '@id': "lineStyle",
-        LineStyle: {
-          color: "ff1427a5",
-          width: "3"
-          }
-      }
-    ],
-    StyleMap:[{
-      '@id': "route",
-      Pair: [
-        {key: "normal", styleUrl: "#route_n"},
-        {key: "highlight", styleUrl: "#route_h"} ]
-      }
-    ]
-  };
-  doc.ele(kmlStyle);
-  doc.ele({"name": "Trace RouteMarins"});
-  let f1 = doc.ele('Folder');
-  f1.ele('name', "RouteMarins " + points[0].race);
-  let f2 = f1.ele('Folder');
+    // 1. Détecter automatiquement la timezone de l'utilisateur
+    const userTimezone = moment.tz.guess();
 
-  for (point of points) {
-      if (point.latitude !== undefined && point.longitude !== undefined) {
-          let placemark = f2.ele('Placemark');
-          let timestamp = placemark.ele('TimeStamp');
-          if ((point.timezone === "CET") || (point.timezone === "CEST")) {
-            placemark.ele('name', moment.tz(point.date + " " + point.time, "Europe/Paris").format('DD MMM [-] HH:mm') + 'loc ('+ point.ttw + ')');
-            timestamp.ele('when', moment.tz(point.date + " " + point.time, "Europe/Paris").toISOString());
-          } else if (point.timezone === "UTC") {
-            placemark.ele('name', moment.utc(point.date + " " + point.time).format('DD MMM [-] HH:mm') + 'utc ('+ point.ttw + ')');
-            timestamp.ele('when', moment.utc(point.date + " " + point.time).toISOString());
-          }
-          let placepoint = placemark.ele('Point');
-          placepoint.ele('coordinates', point.longitude + ',' + point.latitude + ',0.0');
-          placemark.ele('description').cdata('<table>\
-            <tr><td><strong>Lat - Lon:</strong> '+ dmsConv(point.latitude, point.longitude) + ' </td></tr>\
-            <tr><td><strong>TWS:</strong> '+ point.tws +' </td><td><strong>TWD:</strong> '+ point.twd +' </td></tr>\
-            <tr><td><strong>Wind rotation:</strong> '+ point.rotation +'°/h </td></tr>\
-            <tr><td><strong>SOG:</strong> '+ point.sog +' </td><td><strong>COG:</strong> '+ point.cog +' </td></tr>\
-            <tr><td><strong>TWA:</strong> '+ point.twa +' </td><td><strong>Sail:</strong> '+ point.sail +' </td></tr>\
-            <tr></tr>\
-            </table>');
-          placemark.ele({'styleUrl': '#route'})
-      }
-  }
-  let linePlacemark = f1.ele('Placemark');
-  linePlacemark.ele({"name": "Path RouteMarins", "styleUrl": "#lineStyle"});
-  lineString = linePlacemark.ele("LineString");
-  lineString.ele({"tessellate": "1"});
-  var coord = '';
-  var times = '';
-  for (point of points) {
-      coord = (coord == '' ? '' : coord + ' \n') + point.longitude + ',' + point.latitude ;
-      times = (times == '' ? '' : times + ' \n') + point.date + " " + point.time ;
+    let kml = builder.create("kml", {
+        version: '1.0',
+        encoding: 'UTF-8'
+    });
+    kml.att('xmlns', "http://www.opengis.net/kml/2.2"),
+    kml.att('xmlns:vlm', "http://www.v-l-m.org"),
+    kml.att('xmlns:gx', "http://www.google.com/kml/ext/2.2"),
+    kml.att('creator', "RouteMarins");
+    let doc = kml.ele('Document');
+    var kmlStyle= {
+        Style: [{
+            '@id': "route_n",
+            IconStyle: {
+                scale: "0.5",
+                color: "ff1427a5",
+                Icon: { href: "https://www.webinage.fr/Placemark-32.png" },
+                hotSpot: {"@x": "16", "@y": "1", "@xunits": "pixels", "@yunits": "pixels"}
+            }
+        },{
+            '@id': "route_h",
+            IconStyle: {
+                scale: "0.5",
+                color: "ff1427a5",
+                Icon: { href: "https://www.webinage.fr/Placemark-32.png" },
+                hotSpot: {"@x": "16", "@y": "1", "@xunits": "pixels", "@yunits": "pixels"}
+            }
+        },{
+            '@id': "lineStyle",
+            LineStyle: {
+                color: "ff1427a5",
+                width: "3"
+            }
+        }
+        ],
+        StyleMap:[{
+            '@id': "route",
+            Pair: [
+                {key: "normal", styleUrl: "#route_n"},
+                {key: "highlight", styleUrl: "#route_h"} ]
+            }
+        ]
+    };
+    doc.ele(kmlStyle);
+    doc.ele({"name": "Trace RouteMarins"});
+    let f1 = doc.ele('Folder');
+    f1.ele('name', "RouteMarins " + points[0].race);
+    let f2 = f1.ele('Folder');
+
+    for (point of points) {
+        if (point.latitude !== undefined && point.longitude !== undefined) {
+            let placemark = f2.ele('Placemark');
+            let timestamp = placemark.ele('TimeStamp');
+            // 2. Traiter le point de manière générique
+            let pointMoment;
+            if (point.timezone === "UTC") {
+                pointMoment = moment.utc(point.date + " " + point.time);
+            } else {
+                // Si ce n'est pas de l'UTC (CET/CEST fourni par Zezo), on l'interprète avec la timezone de l'utilisateur
+                pointMoment = moment.tz(point.date + " " + point.time, userTimezone);
+            }
+
+            // 3. Générer le nom avec le formatage dynamique de la zone locale (ex: "05 sept. - 15:22 cest")
+            // Le 'z' minuscule affiche l'abréviation locale du fuseau (cet, cest, utc, etc.) en minuscules via .toLowerCase()
+            let zoneAbbreviation = pointMoment.format('z').toLowerCase();
+            let displayName = pointMoment.format('DD MMM [-] HH:mm ') + zoneAbbreviation + ' (' + point.ttw + ')';
+            placemark.ele('name', displayName);
+            // 4. Le timestamp pour le fichier (KML ici) reste toujours au standard ISO UTC
+            timestamp.ele('when', pointMoment.utc().toISOString());
+
+            let placepoint = placemark.ele('Point');
+            placepoint.ele('coordinates', point.longitude + ',' + point.latitude + ',0.0');
+            placemark.ele('description').cdata('<table>\
+                <tr><td><strong>Lat - Lon:</strong> '+ dmsConv(point.latitude, point.longitude) + ' </td></tr>\
+                <tr><td><strong>TWS:</strong> '+ point.tws +' </td><td><strong>TWD:</strong> '+ point.twd +' </td></tr>\
+                <tr><td><strong>Wind rotation:</strong> '+ point.rotation +'°/h </td></tr>\
+                <tr><td><strong>SOG:</strong> '+ point.sog +' </td><td><strong>COG:</strong> '+ point.cog +' </td></tr>\
+                <tr><td><strong>TWA:</strong> '+ point.twa +' </td><td><strong>Sail:</strong> '+ point.sail +' </td></tr>\
+                <tr></tr>\
+                </table>');
+            placemark.ele({'styleUrl': '#route'})
+        }
     }
-  lineString.ele('coordinates').text(coord);
-  lineString.ele('TimeStamp').ele('when').text(times);
+    let linePlacemark = f1.ele('Placemark');
+    linePlacemark.ele({"name": "Path RouteMarins", "styleUrl": "#lineStyle"});
+    lineString = linePlacemark.ele("LineString");
+    lineString.ele({"tessellate": "1"});
+    var coord = '';
+    var times = '';
+    for (point of points) {
+        coord = (coord == '' ? '' : coord + ' \n') + point.longitude + ',' + point.latitude ;
+        times = (times == '' ? '' : times + ' \n') + point.date + " " + point.time ;
+    }
+    lineString.ele('coordinates').text(coord);
+    lineString.ele('TimeStamp').ele('when').text(times);
 
-  let kmlString = kml.end({
-    pretty: true
-  });
+    let kmlString = kml.end({
+        pretty: true
+    });
 
-  displayGeneratedContent(kmlString, copyToClipboard);
+    displayGeneratedContent(kmlString, copyToClipboard);
 
-  return kmlString;
+    return kmlString;
 };
 
 document.getElementById("kmlExport").addEventListener("click", function () {
-  exportkml(true);
+    exportkml(true);
 });
 
 document.getElementById("kmlDownload").addEventListener("click", function () {
-  downloadGeneratedFile(exportkml(false), "kml", "application/vnd.google-earth.kml+xml;charset=utf-8");
+    downloadGeneratedFile(exportkml(false), "kml", "application/vnd.google-earth.kml+xml;charset=utf-8");
 });
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
