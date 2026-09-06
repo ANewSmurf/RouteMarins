@@ -1,7 +1,7 @@
 {
    "manifest_version": 3,
    "name": "RouteMarins",
-   "version": "2.0.3",
+   "version": "2.0.4",
    "description": "Extract data from Zezo and display them in table ; Direct Windy and Toxcct access ; wind rotation calc ; kml & prog export",
    "minimum_chrome_version": "102",
    "background": {
